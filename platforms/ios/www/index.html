@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+
+        <script src="lib/jquery/dist/jquery.min.js"></script>
+        <script src="lib/handlebars/handlebars.min.js"></script>
+        <script src="lib/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="js/cuestionario_prueba.js"></script>
+        <script src="js/hb-call.js"></script>
+        <script src="js/activeRecord.js"></script>
+        <script src="js/audio-record.js"></script>
+
+        <link href="lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+        <link href="lib/bootstrap/dist/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+        <link href="css/index.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="load" style="display:none;"><center>
+        <br/><br/><br/>
+        <img src="img/logo.png" width="70%" /><br/>
+        <img src="img/load.GIF" id="load-img"/>
+        <div>Cargando ...</div>
+        </center>
+        </div>
+        <div class="container-fluid" id="container-id">
+                <div class="container">
+                 <div class="row">
+                 <h3 onclick="loadDBTPL('', 'cuestionarios', 'tpl');" class="pull-left">Inicio <i class="fa fa-home" aria-hidden="true"></i></h3>
+                 <h3 id="line" class="pull-right" style="margin-right:10px;"><i class="fa fa-wifi" aria-hidden="true" style="color:#58ACFA"></i></h3>
+                 </div>
+                 </div>
+                <div id="tpl">
+                <center>TPL</center>
+                 <div class="container" id="nodo">
+                     <br/><br/><br/>
+                     <center>
+                     <h1>Configuración <i class="fa fa-cogs" aria-hidden="true"></i></h1>
+                    <h3>Ingresa una red activa del software</h3><br/><br/>
+                     <form id="nodo">
+                         <div class="form-group">
+                         <input type="text" name="route" placeholder="Ingresa la URL a la que te conectarás" class="form-controll col-lg-12"><br/><br/>
+                         <input type="text" name="namenode" placeholder="Nombre del nodo" class="form-controll col-lg-12"><br/><br/>
+                         <button class="btn btn-info btn-large">Enviar</button>
+                         </div>
+                     </form>
+                     </center>
+                 </div>
+                 </div>                 
+                        
+        </div>
+            <script type="text/javascript" src="cordova.js"></script>
+            <script type="text/javascript" src="js/index.js"></script>
+            <script type="text/javascript">
+            app.initialize();
+            </script>
+            <script type="text/javascript">
+    
+                /*dropTable('nodes')
+                dropTable('formularios');*/
+                lastRegisterQuery('nodes', function(callback){
+                    if(callback == null){
+                       $('#nodo').show();
+                    }else{
+                       console.log(callback.nodo);
+                       loadDBTPL('', 'cuestionarios', 'tpl');
+                    }
+                });
+            </script>
+            <script type="text/javascript">
+                document.addEventListener("online", function(){ $('#line').html('<i class="fa fa-wifi" aria-hidden="true" style="color:#58ACFA"></i>');}, false);
+                document.addEventListener("offline", function(){ $('#line').html('<i class="fa fa-exclamation-triangle" aria-hidden="true" style="color:#F7FE2E;"></i>') }, false);
+                /*dropTable("formularios");*/
+            </script>
+            <script type="text/javascript">
+                $(document).ready(function(){
+                    var dh = $(window).height();
+                    $('.load').height(dh);
+                    var dh2 = dh/4;
+                    $('#load-img').css({'margin-top':dh2});
+                });
+                $.ajaxSetup({
+                    beforeSend: function() {
+                        $('#container-id').hide();
+                        $('.load').show();
+                    },
+                    complete: function() {
+                        setTimeout(function(){
+                           $('#container-id').show();
+                           $('.load').hide();
+                        }, 1200);
+                    }
+                });
+            </script>
+            <script src="js/formularios-controller.js"></script>
+        </body>
+    </html>

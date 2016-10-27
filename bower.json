@@ -1,0 +1,22 @@
+{
+  "name": "agora-mobile",
+  "authors": [
+    "alfredo777 <jose_alfredo@cursa.me>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "www/lib"
+  ],
+  "dependencies": {
+    "handlebars": "^4.0.5",
+    "font-awesome": "fontawesome#^4.6.3"
+  }
+}

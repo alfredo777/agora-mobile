@@ -1,0 +1,21 @@
+<div id="list-courses">
+<br/><br/>
+<center><h1>¡Hola!</h1>
+<h3>No tienes ningun formulario registrado aún.</h3></center>
+<form id="registerform">
+  <div class="form-group">
+  <br/><br/>
+  <center><input type="text" name="tokenizer" placeholder="Token para Descargar form" class="form-controll col-lg-12"><br/><br/><br/>
+  <button class="btn btn-primary">Validar Código</button></center>
+  </div>
+</form>
+<script type="text/javascript">
+    callAllQuery('formularios', function(callback){
+      if(callback != null){
+        loadDBTPLforms(callback, 'forms-list', 'list-courses');      
+      }
+    });
+    
+</script>
+<script src="js/formularios-controller.js"></script>
+</div> 

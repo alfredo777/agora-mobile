@@ -1,0 +1,183 @@
+<div class="container">
+  <div class="insturcciones">
+    <h1>Cuestionarios</h1>
+    <div class="row">
+      <div class="btn btn-primary btn-large pull-right">Agregar + </div>
+      <br/><br/>
+    </div>
+    <div class="row">
+      <div class="panel back-color">
+        <div class="panel-heading">Cuestionarios actuales</div>
+        <div class="panel-body bs-docs-section">
+          <p>Selecciona uno de los formularios para visualizarlo.</p>
+        </div>
+        
+        <ul  class="list-group">
+          <li class="list-group-item">
+            <div class="row">
+              <div class="col-md-8"><h3>{{cuestionario.titulo}}</h3>
+                <p>{{cuestionario.instrucciones}}</p>
+              </div>
+              <div class="col-md-4"><div class="btn-group pull-right"><div class="btn btn-info" onclick="opPaginateForm();">Ingresar</div><div class="btn btn-success" onclick="">Sincronizar</div><div class="btn btn-danger" onclick="">Eliminar</div></div></div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div id="form-{{cuestionario.id}}" class="op-paginar" style="display: none;">
+    {{#equal cuestionario.paginar true}}
+    <div class="row">
+      <div class="col-md-12">
+        <br/>
+        <div class="progress">
+          <div class="progress-bar progress-bar-danger progress-bar-striped" id="pbar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 2%;">
+            0%
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/equal}}
+    
+    <div class="paginar col-md-12" style="display: none;">
+      <form action="/manager/responder" method="POST" id="cuestionario_{{cuestionario.id}}">
+        <input name="cuestionario[id]" type="number" value="{{cuestionario.id}}" style="display:none;"></input>
+        {{#each preguntas}}
+        <div class="pagina" id="{{id}}">
+          <h4>{{titulo}}</h4>
+          
+          <div class="col-md-12">
+            {{descripccion}}<br/>
+            {{#equal tipo 'mt'}}
+            {{#diferent imagen null}}
+            <div class="col-md-6">
+              <img src="data:image/png;base64,{{imagen}}" width="80%" /><br/><br/>
+            </div>
+            {{/diferent }}
+            <div class="col-md-6">
+              {{#multiplesuper respuestas}}
+              {{/multiplesuper}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'mtca'}}
+            {{#diferent imagen null}}
+            <div class="col-md-6">
+              <img src="data:image/png;base64,{{imagen}}" width="80%"  /><br/><br/>
+            </div>
+            {{/diferent }}
+            <div class="col-md-6">
+              {{#multiplesupermtca respuestas}}
+              {{/multiplesupermtca}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'mtcaval'}}
+            {{#diferent imagen null}}
+            <div class="col-md-6">
+              <img src="data:image/png;base64,{{imagen}}" width="80%"  /><br/><br/>
+            </div>
+            {{/diferent }}
+            <div class="col-md-6">
+              {{#each respuestas}}
+              <h4>{{titulo}}</h4>
+              {{#valuescontrapose valores id}}
+              {{/valuescontrapose}}
+              {{/each}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'mtcat'}}
+            {{#diferent imagen null}}
+            <div class="col-md-6">
+              <img src="data:image/png;base64,{{imagen}}" width="80%"  /><br/><br/>
+            </div>
+            {{/diferent }}
+            <div class="col-md-6">
+              {{#advancedcategory respuestas id categorias}}
+              {{/advancedcategory}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'sl'}}
+            {{#diferent imagen null}}
+            <div class="col-md-6">
+              <img src="data:image/png;base64,{{imagen}}" width="80%"  /><br/><br/>
+            </div>
+            {{/diferent }}
+            <div class="col-md-6">
+              {{#scalasuper respuestas id}}
+              {{/scalasuper}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'es'}}
+            <div class="pid-{{id}}" style='background-size: 100% 90%; background-repeat:no-repeat;'>
+              {{#diferent imagen null}}
+              <img src="data:image/png;base64,{{imagen}}" class="hidden-background-image" style="display:none;" />
+              <script type="text/javascript">
+              var actDiv = $('.pid-{{id}}').children('.hidden-background-image');
+              var url = $(actDiv).attr('src');
+              var img = new Image();
+              img.src = url;
+              $('.pid-{{id}}').css("background-image", "url('" + img.src + "')");
+              var wx = $(window).height();
+              wx = wx * 0.70;
+              $('.pid-{{id}}').height(wx);
+              </script>
+              {{/diferent}}
+              {{#equal emogi false}}
+              {{#scala de_a de_b id pase_dinamicos}}{{/scala}}
+              {{/equal}}
+              {{#equal emogi true}}
+              {{#scalaemogi  de_a de_b id coleccion_emogi pase_dinamicos }} {{/scalaemogi}}
+              {{/equal}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'ab'}}
+            <div class="form-group">
+              <input name="tipo[pregunta][{{id}}][valor]" class="form-control" type="text" placeholder="Pregunta Abierta" id="pregunta_{{id}}"></input>
+            </div>
+            {{/equal}}
+          </div>
+          <br/>
+        </div>
+        {{/each}}
+        <center>
+        <div id="finish" style="display:none;">
+          <center>
+          <img src="images_sim/agora-log.png" alt="agora log" data-pin-nopin="true" />
+          <h4>Hola has finalizado el cuestionario da click en enviar para que finalice el proceso. </h4>
+          </center>
+        </div>
+        </center>
+      </form>
+    </div>
+
+
+    <div class="col-md-6">
+      {{#equal cuestionario.paginar true}}
+      <div class="preve-btn"> <i class="fa fa-chevron-circle-left" aria-hidden="true"></i> </div>   
+      {{/equal}}
+   
+    </div>
+    <div class="col-md-6">
+      <div type="submit" class="nex-btn" id="envio" class="finish" style="font-size:35px;" data-send="cuestionario_{{cuestionario.id}}"><i class="fa fa-cloud-upload" aria-hidden="true"></i></div>
+      {{#equal cuestionario.paginar true}}
+      <div class="nex-btn finish{{id}}" onclick="pagNext()" id="siguiente" ><i class="fa fa-chevron-circle-right" aria-hidden="true"></i></div>
+    </div>
+    <script type="text/javascript">
+    $('document').ready(function(){
+    $('#envio').hide();
+    $('.pagina').hide();
+    var thisPage = $('.pagina').first();
+    $('#siguiente').data('actual', thisPage.attr('id'));
+    thisPage.show();
+    });
+    </script>
+    {{/equal}}
+  </div>
+
+  <script type="text/javascript">
+  $('.to-emogi').click(function(){
+  $('.to-emogi').removeClass('emogi');
+  $(this).addClass('emogi');
+  });
+  </script>

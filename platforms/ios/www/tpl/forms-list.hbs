@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="insturcciones">
+    <h1>Cuestionarios</h1>
+    <div class="row">
+      <div class="btn btn-primary btn-large pull-right" onclick="loadDBTPL('', 'form-form', 'tpl');">Agregar + </div>
+      <br/><br/>
+    </div>
+    <div class="row">
+      <div class="panel back-color">
+        <div class="panel-heading">Cuestionarios actuales</div>
+        <div class="panel-body bs-docs-section">
+          <p>Selecciona uno de los formularios para visualizarlo.</p>
+        </div>
+        <ul  class="list-group" >
+        <div id="luli">
+        </div>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="preload">
+</div>
+{{#each formularios}}
+  {{#callTPL 'liform' content 'luli' }}{{/callTPL}}
+{{/each}}
+

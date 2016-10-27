@@ -1,0 +1,503 @@
+<a class="btn btn-default" onclick="recordAudio()" id="audio-record" data-name="audio-cuestionario-{{cuestionario.id}}-{{idrand}}-{{idrandop}}" data-bname="audio-cuestionario-{{cuestionario.id}}-{{idrand}}-{{idrandop}}"><i class="fa fa-microphone" aria-hidden="true"></i></a>
+
+<a class="btn btn-default" onclick="stopRecordAudio()" id="stop-audio-record" style="color:#FF0000; display:none;"><b><i class="fa fa-stop-circle-o" aria-hidden="true"></i></b></a>
+
+<a onclick="playAudio('documents://myrecording.wav')" id="play-audio" class="btn btn-default" style="display:none;"><i class="fa fa-play-circle-o" aria-hidden="true"></i> Reproducir </a>
+
+<p id="audio_position" style="display:none;"></p>
+<div id="logs" style="display:none;"></div>
+<div id='data-super-{{cuestionario.id}}' data-cuestionario="{{json cuestionario}}" data-preguntas="{{json preguntas}}"></div>
+<div class="container-fluid">
+  <div id="form-{{cuestionario.id}}" class="op-paginar">
+    {{#equal cuestionario.paginar true}}
+    <div class="row">
+      <div class="col-md-12">
+        <br/>
+        <div class="progress">
+          <div class="progress-bar progress-bar-danger progress-bar-striped" id="pbar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 2%;">
+            0%
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/equal}}
+    
+    <div class="paginar col-md-12">
+      <form action="/manager/responder" method="POST" id="cuestionario_{{cuestionario.id}}" data-url="url" enctype="multipart/form-data" accept-charset="UTF-8">
+        <input name="cuestionario[id]" type="number" value="{{cuestionario.id}}" style="display:none;"></input>
+        {{#each preguntas}}
+          <div class="pagina to-page" id="{{id}}">
+
+          <h4>{{titulo}}</h4>
+          
+          <div class="col-md-12">
+            {{descripccion}}<br/>
+            {{#equal tipo 'mt'}}
+            {{#diferent imagen null}}
+            <div class="col-md-6">
+              <img src="data:image/png;base64,{{imagen}}" width="80%" /><br/><br/>
+            </div>
+            {{/diferent }}
+            <div class="col-md-6">
+              {{#multiplesuper respuestas}}
+              {{/multiplesuper}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'mtca'}}
+            {{#diferent imagen null}}
+            <div class="col-md-6">
+              <img src="data:image/png;base64,{{imagen}}" width="80%"  /><br/><br/>
+            </div>
+            {{/diferent }}
+            <div class="col-md-6">
+              {{#multiplesupermtca respuestas}}
+              {{/multiplesupermtca}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'mtcaval'}}
+            {{#diferent imagen null}}
+            <div class="col-md-6">
+              <img src="data:image/png;base64,{{imagen}}" width="80%"  /><br/><br/>
+            </div>
+            {{/diferent }}
+            <div class="col-md-6">
+              {{#each respuestas}}
+              <h4>{{titulo}}</h4>
+              {{#valuescontrapose valores id}}
+              {{/valuescontrapose}}
+              {{/each}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'mtcat'}}
+            {{#diferent imagen null}}
+            <div class="col-md-6">
+              <img src="data:image/png;base64,{{imagen}}" width="80%"  /><br/><br/>
+            </div>
+            {{/diferent }}
+            <div class="col-md-6">
+              {{#advancedcategory respuestas id categorias}}
+              {{/advancedcategory}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'sl'}}
+            {{#diferent imagen null}}
+            <div class="col-md-6">
+              <img src="data:image/png;base64,{{imagen}}" width="80%"  /><br/><br/>
+            </div>
+            {{/diferent }}
+            <div class="col-md-6">
+              {{#scalasuper respuestas id}}
+              {{/scalasuper}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'es'}}
+            <div class="pid-{{id}}" style='background-size: 100% 90%; background-repeat:no-repeat;'>
+              {{#diferent imagen null}}
+              <img src="data:image/png;base64,{{imagen}}" class="hidden-background-image" style="display:none;" />
+              <script type="text/javascript">
+              var actDiv = $('.pid-{{id}}').children('.hidden-background-image');
+              var url = $(actDiv).attr('src');
+              var img = new Image();
+              img.src = url;
+              $('.pid-{{id}}').css("background-image", "url('" + img.src + "')");
+              var wx = $(window).height();
+              wx = wx * 0.70;
+              $('.pid-{{id}}').height(wx);
+              </script>
+              {{/diferent}}
+              {{#equal emogi false}}
+              {{#scala de_a de_b id pase_dinamicos}}{{/scala}}
+              {{/equal}}
+              {{#equal emogi true}}
+              {{#scalaemogi  de_a de_b id coleccion_emogi pase_dinamicos }} {{/scalaemogi}}
+              {{/equal}}
+            </div>
+            {{/equal}}
+            {{#equal tipo 'ab'}}
+            <div class="form-group">
+              <input name="tipo[pregunta][{{id}}][valor]" class="form-control" type="text" placeholder="Pregunta Abierta" id="pregunta_{{id}}"></input>
+            </div>
+            {{/equal}}
+          </div>
+          <br/>
+        </div>
+        {{/each}}
+        <center>
+        <div id="finish" style="display:none;">
+          <center>
+          <img src="images_sim/agora-log.png" alt="agora log" data-pin-nopin="true" />
+          <h4>Hola has finalizado el cuestionario da click en enviar para que finalice el proceso. </h4>
+          </center>
+        </div>
+        </center>
+      
+
+
+    <div style="width:50%; float:left;">
+      {{#equal cuestionario.paginar true}}
+      <div class="preve-btn" onclick="prevPage();" id="previa"> <i class="fa fa-chevron-circle-left" aria-hidden="true"></i> </div>
+      {{/equal}}
+    </div>
+    {{#equal cuestionario.paginar false}}
+      <button class="nex-btn im-envio" id="envio" class="finish" style="font-size:35px; width:100%;"><i class="fa fa-cloud-upload" aria-hidden="true" ></i> Enviar</button>
+      <script type="text/javascript">
+      $('.to-page').removeClass('pagina');
+      </script>
+    {{/equal}}
+     {{#equal cuestionario.paginar true}}
+        <button class="nex-btn im-envio" id="envio" class="finish" style="font-size:35px; width:100%; border:none;"><i class="fa fa-cloud-upload" aria-hidden="true" ></i> Enviar</button>
+      {{/equal}}
+      
+    <div style="width:50%; float:left;">
+     
+
+      {{#equal cuestionario.paginar true}}
+      <div class="nex-btn finish{{id}}" onclick="pagNext()" id="siguiente" ><i class="fa fa-chevron-circle-right" aria-hidden="true"></i></div>
+    </div>
+    </form>
+    </div>
+    <script type="text/javascript">
+    $('document').ready(function(){
+    $('#envio').hide();
+    $('.pagina').hide();
+    var thisPage = $('.pagina').first();
+    $('#siguiente').data('actual', thisPage.attr('id'));
+    $('#previa').data('actual', thisPage.attr('id'));
+    thisPage.show();
+    });
+    </script>
+    {{/equal}}
+  </div>
+
+  <script type="text/javascript">
+  $('.to-emogi').click(function(){
+  $('.to-emogi').removeClass('emogi');
+  $(this).addClass('emogi');
+  });
+  </script>
+
+<script type="text/javascript">
+
+    
+    $(document).ready(function() {
+        document.addEventListener("deviceready", onDeviceReady, false);
+
+
+        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem){
+            $("#logs").append("fileSystem.root.toURL()="+fileSystem.root.toURL()+'<br/>');
+            $("#logs").append("fileSystem.root.toInternalURL()="+fileSystem.root.toInternalURL()+'<br/>');
+            $("#logs").append("fileSystem.root.nativeURL="+fileSystem.root.nativeURL+'<br/>');
+            $("#logs").append("fileSystem.root.fullPath="+fileSystem.root.fullPath+'<br/>');
+        }, function(){
+            alert("fails!");
+        });
+
+        window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, function(fileSystem){
+            $("#logs").append("fileSystem.root.toURL()="+fileSystem.root.toURL()+'<br/>');
+            $("#logs").append("fileSystem.root.toInternalURL()="+fileSystem.root.toInternalURL()+'<br/>');
+            $("#logs").append("fileSystem.root.nativeURL="+fileSystem.root.nativeURL+'<br/>');
+            $("#logs").append("fileSystem.root.fullPath="+fileSystem.root.fullPath+'<br/>');
+            if(device.platform == "Android"){
+              window.accesURI = fileSystem.root.toInternalURL() + $('#audio-record').data('name')+".mp3";
+              window.sendURI = fileSystem.root.toURL() + $('#audio-record').data('name')+".mp3";
+            }else{
+              window.accesURI = fileSystem.root.toInternalURL() + $('#audio-record').data('name')+".wav";
+              window.sendURI = fileSystem.root.toURL() + $('#audio-record').data('name'+".wav");
+            }
+            
+        }, function(){
+            alert("fails!");
+        });
+    
+        var playAA = "playAudio("+"'"+accesURI+"'" +")";
+        $("#play-audio").attr('onclick', playAA);
+ 
+
+       lastRegisterQuery('nodes', function(callback){
+          var NoDo;
+          NoDo = callback.nodo;
+          if(NoDo == "localhost:3000"){
+              NoDo = "192.168.1.71:3000";
+          }
+          $("#cuestionario_{{cuestionario.id}}").data('url',NoDo);
+        });
+    });
+
+
+    function onDeviceReady() {
+       window.deviceAllData = device;
+       $("#logs").append(deviceAllData);
+    }
+    var mediaRec = null;
+    var recTime = null;   
+    var recInterval; 
+
+    function recordAudio() {
+         var src =   accesURI ;
+         mediaRec = new Media(src, onSuccess, onError);
+        // Record audio
+        mediaRec.startRecord();
+       
+        $('#audio-record').hide();
+        $('#stop-audio-record').show();
+        $('#play-audio').hide();
+        recTime = 0;
+        recInterval = setInterval(function() {
+            recTime = recTime + 1;
+            setAudioPosition(recTime + " sec");
+            if (recTime >= 420) {
+                clearInterval(recInterval);
+                mediaRec.stopRecord();
+                var localFile = LocalFileSystem.TEMPORARY;
+                console.log(localFile);
+                $('#audio_position').html(localFile);
+                var datas = [src,"{{cuestionario.id}}"];
+                var insertionAudio = insertData(datas,'audios',myDataBase,Schema,false);
+                console.log(insertionAudio);
+
+            }
+        }, 1000);
+    }
+
+    function stopRecordAudio(){
+      $("#logs").html(mediaRec);
+      if (mediaRec) {
+      clearInterval(recInterval);
+      mediaRec.stopRecord();
+      var localFile = LocalFileSystem.TEMPORARY;
+      var src = $('#audio-record').data('name');
+      $('#audio_position').html(localFile);
+      $('#audio-record').show();
+      $('#stop-audio-record').hide();
+      var devicePlatform = device.platform;
+      $("#logs").append(devicePlatform+'<br/>');
+      if(devicePlatform == 'iOS'){
+      $('#play-audio').show();
+      }
+      $('#audio_position').hide();
+      var datas = [src,"{{cuestionario.id}}"];
+      var insertionAudio = insertData(datas,'audios',myDataBase,Schema,false);
+
+      
+      var callLasr = lastRegisterQuery('audios', function(callback){
+        console.log(callback);
+      });
+
+      }
+    }
+
+    function onSuccess() {
+        $("#logs").html("recordAudio():Audio Success" + "<br/>");
+        var deviceID = deviceAllData.uuid;
+        var acces_id = "{{cuestionario.id}}";
+
+        window.requestFileSystem(LocalFileSystem.TEMPORARY, 0, function(fileSystem){
+            if(deviceAllData.platform == "Android"){
+            var accesURI = fileSystem.root.toInternalURL() + $('#audio-record').data('name')+".mp3";
+            var sendURI = fileSystem.root.nativeURL + $('#audio-record').data('name')+".mp3";
+            }else{
+            var accesURI = fileSystem.root.toInternalURL() + $('#audio-record').data('name')+".wav";
+            var sendURI = fileSystem.root.nativeURL + $('#audio-record').data('name')+".wav";
+            }
+
+            lastRegisterQuery('nodes', function(callback){
+              var NoDo;
+              NoDo = callback.nodo;
+              if(NoDo == "localhost:3000"){
+                  NoDo = "192.168.1.71:3000";
+              }
+              $("#logs").append("URL de acceso =" + accesURI + "<br/>");
+              $("#logs").append("URL de envio =" + sendURI + "<br/>");
+              $("#logs").append(NoDo + "<br/>");
+              $("#logs").append("url nodo = "+ NoDo + "<br/>");
+  
+            var urlToSend = "http://"+NoDo+"/api/create_audios"
+            var urlCVB = encodeURI(urlToSend);
+
+            $("#logs").append("url destino = "+ urlCVB + "<br/>");
+            $("#logs").append("id del dispositivo = "+ deviceID + "<br/>");
+            $("#logs").append("id del cuestionario = "+ acces_id + "<br/>");
+
+            var options = new FileUploadOptions();
+            options.fileKey="file";
+            
+            if (deviceAllData.platform == "Android"){
+            options.mimeType="audio/mpeg";
+            options.fileName=$('#audio-record').data('name')+".mp3";
+
+            }else{
+            options.mimeType="audio/wav";
+            options.fileName=$('#audio-record').data('name')+".wav";
+
+            }
+
+            $("#logs").append("opcciones = "+ options + "<br/>");
+
+          
+            var params = new Object();
+            params.value1 = acces_id;
+            params.value2 = deviceID;
+            options.params = params;
+
+            options.chunkedMode = false;
+            options.multipartMode = true;
+
+            $("#logs").append("params = "+ params + "<br/>");
+
+
+            var ft = new FileTransfer();
+
+            ft.upload(accesURI, urlCVB, function(r){
+               console.log("Enviado");
+            }, function(error){
+               console.log("Error !!!!!");
+            }, options);
+
+
+          });
+
+        }, function(){
+            alert("fails!");
+        });
+
+
+    }
+
+    // onError Callback
+    //
+    function onError(error) {
+      $("#logs").html('code: '    + error.code    + '\n' +
+                  'message: ' + error.message + '\n');
+    }
+
+    // Set audio position
+    //
+    function setAudioPosition(position) {
+        //document.getElementById('audio_position').innerHTML = position;
+        var color = $('#stop-audio-record').css('color');
+        if(color == "rgb(255, 0, 0)" ){
+         color = 'rgb(255,123,22)';
+        }else{
+         color = 'rgb(255,0,0)'; 
+        }
+        $('#stop-audio-record').css('color',color);
+
+    }
+
+    function getPhoneGapPath() {
+
+    var path = window.location.pathname;
+    path = path.substr( 0, path.length - 10 );
+
+    console.log(path);
+    return path
+
+    };
+
+    function playAudio(url) {
+    // Play the audio file at url
+    var my_media = new Media(url,
+        // success callback
+        function() {
+            console.log("playAudio():Audio Success");
+        },
+        // error callback
+        function(err) {
+            $("#logs").html("playAudio():Audio Error: "+err);
+    });
+
+    // Play audio
+    my_media.play();
+
+    // Mute volume after 2 seconds
+    setTimeout(function() {
+        my_media.setVolume('0.0');
+    }, 5555000);
+
+    // Set volume to 1.0 after 5 seconds
+    setTimeout(function() {
+        my_media.setVolume('1.0');
+    }, 2000);
+    }
+
+      $("#cuestionario_{{cuestionario.id}}").submit(function(){
+          
+          var $form = $(this);
+          var nodelatNODE =  $(this).data('url');
+          var url = 'http://'+nodelatNODE+$form.attr('action');
+          var formData = new FormData( $form[0] );
+
+          submitFormFinal (url, formData, function(data, err) {
+            if(err){ 
+              var insertionNode = insertData(formdata,'notsend',myDataBase,Schema,false);
+              return alert("El formulario no pudo ser enviado, se ha respaldado en la memoria interna.");
+
+            }else{
+              console.log("Exito al enviar formulario ****************");
+            }
+          });
+          return false;
+        
+      });
+      function submitFormFinal(url, formData, callback) {
+        $.ajax({
+            url: url,
+            data: formData,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            success: function(data) {
+                //$('#cuestionario_{{cuestionario.id}}')[0].reset();
+                resetForm();
+
+            },
+            error: function(err) {
+                callback(null, err);
+            }
+        });
+      };
+
+      function lastAudio(url){
+            var urlToSend = "http://"+$("#cuestionario_{{cuestionario.id}}").data('url')+"/api/create_audios"
+            var urlCVB = encodeURI(urlToSend);
+            var deviceID = device.uuid;
+
+            var win = function(r) {
+                 $("#logs").append("Code = " + r.responseCode + '\n' +
+                 "Response = " + r.response + '\n' +
+                 "Sent = " + r.bytesSent);
+            }
+
+            var fail = function(error) {
+                 $("#logs").html("An error has occurred: Code = " + error  + '\n' +
+                  "upload error source " + error.source + '\n' +
+                  "upload error target " + error.target);
+            }
+
+            var options = new FileUploadOptions();
+            options.fileKey="file";
+            options.fileName=$('#audio-record').data('bname');
+            options.mimeType="audio/wav";
+
+            var params = new Object();
+            params.value1 = "{{cuestionario.id}}";
+            params.value2 = deviceID;
+            options.params = params;
+            var ft = new FileTransfer();
+            ft.upload(url, urlCVB, win, fail, options);
+
+      }
+
+      
+      function resetForm(){
+        var cuestionario_r = $("#data-super-{{cuestionario.id}}").data('cuestionario');
+        var preguntas_r = $("#data-super-{{cuestionario.id}}").data('preguntas');
+        var content = {'cuestionario': cuestionario_r, 'preguntas': preguntas_r};
+        content = JSON.stringify(content);
+        loadDBTPLparser(content, 'formulario', 'tpl');
+      
+      }
+  
+</script>
+<!--    <preference name="AndroidPersistentFileLocation" value="Compatibility" />-->
+
